@@ -15,3 +15,12 @@
 *.exe
 *.out
 *.app
+
+# temp files
+*~
+*.swp
+
+# kernel images
+chapter2/testkernel
+
+*.patch
