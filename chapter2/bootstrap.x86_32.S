@@ -7,7 +7,7 @@
 	.ascii	",VIRT_BASE=0x0"
 	.ascii	",ELF_PADDR_OFFSET=0x0"
 	.ascii	",HYPERCALL_PAGE=0x2"
-	.ascii	",PAE=no"
+	.ascii	",PAE=yes"
 	.ascii	",LOADER=generic"
 	.byte	0
 .text
