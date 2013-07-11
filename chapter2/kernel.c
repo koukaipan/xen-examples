@@ -1,6 +1,11 @@
 #include <stdint.h> 
 #include <xen.h>
-#include "debug.h"
+
+#if defined (__i686__)
+#include "hypercall-x86_32.h"
+#else
+#error "Unsupported architecture"
+#endif
 
 /* Some static space for the stack */
 char stack[8192];
