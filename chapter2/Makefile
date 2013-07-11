@@ -1,12 +1,18 @@
 XEN_SRC = ../../src/xen-4.2.1
 
 #ARCH dependent
-XEN_TARGET_ARCH = x86_32
+XEN_TARGET_ARCH = x86_64
 ifeq ($(XEN_TARGET_ARCH),x86_32)
 ARCH_CFLAGS  := -m32 -march=i686
 ARCH_LDFLAGS := -m elf_i386 -T x86_32.lds
 ARCH_ASFLAGS := -m32
 ARCH_OBJS := bootstrap.x86_32.o
+endif
+ifeq ($(XEN_TARGET_ARCH),x86_64)
+ARCH_CFLAGS := -m64
+ARCH_ASFLAGS := -m64
+ARCH_LDFLAGS := -m elf_x86_64 -T x86_64.lds
+ARCH_OBJS := bootstrap.x86_64.o
 endif
 
 CPPFLAGS += -I$(XEN_SRC)/xen/include/public $(ARCH_CPPFLAGS)
