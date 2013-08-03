@@ -6,6 +6,12 @@ ARCH_LDFLAGS := -m elf_i386 -T loader.lds
 ARCH_ASFLAGS := -m32
 ARCH_OBJS := bootstrap.x86_32.o
 endif
+ifeq ($(XEN_TARGET_ARCH),x86_64)
+ARCH_CFLAGS := -m64
+ARCH_ASFLAGS := -m64
+ARCH_LDFLAGS := -m elf_x86_64 -T loader-x86_64.lds
+ARCH_OBJS := bootstrap.x86_64.o
+endif
 
 #CPPFLAGS += -I../xen/xen/include/ -I../xen/xen/include/asm
 CPPFLAGS += -Iinclude -Iinclude/x86 -DCONFIG_X86_PAE -D__XEN_INTERFACE_VERSION__=0x00030203 $(ARCH_CPPFLAGS)
