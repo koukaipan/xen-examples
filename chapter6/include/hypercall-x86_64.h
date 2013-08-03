@@ -36,17 +36,20 @@
 
 #include <xen/xen.h>
 #include <xen/sched.h>
-#include <mini-os/mm.h>
+#include "x86_mm.h"
 
 #define __STR(x) #x
 #define STR(x) __STR(x)
 
 extern char hypercall_page[PAGE_SIZE];
 
+typedef struct { unsigned long pte; } pte_t;
+#define __pte(x) ((pte_t) { (x) } )
+
 #define _hypercall0(type, name)			\
 ({						\
 	long __res;				\
-	asm volatile (				\
+	__asm volatile (			\
 		"call hypercall_page + ("STR(__HYPERVISOR_##name)" * 32)"\
 		: "=a" (__res)			\
 		:				\
@@ -57,7 +60,7 @@ extern char hypercall_page[PAGE_SIZE];
 #define _hypercall1(type, name, a1)				\
 ({								\
 	long __res, __ign1;					\
-	asm volatile (						\
+	__asm volatile (					\
 		"call hypercall_page + ("STR(__HYPERVISOR_##name)" * 32)"\
 		: "=a" (__res), "=D" (__ign1)			\
 		: "1" ((long)(a1))				\
@@ -68,7 +71,7 @@ extern char hypercall_page[PAGE_SIZE];
 #define _hypercall2(type, name, a1, a2)				\
 ({								\
 	long __res, __ign1, __ign2;				\
-	asm volatile (						\
+	__asm volatile (					\
 		"call hypercall_page + ("STR(__HYPERVISOR_##name)" * 32)"\
 		: "=a" (__res), "=D" (__ign1), "=S" (__ign2)	\
 		: "1" ((long)(a1)), "2" ((long)(a2))		\
@@ -79,7 +82,7 @@ extern char hypercall_page[PAGE_SIZE];
 #define _hypercall3(type, name, a1, a2, a3)			\
 ({								\
 	long __res, __ign1, __ign2, __ign3;			\
-	asm volatile (						\
+	__asm volatile (					\
 		"call hypercall_page + ("STR(__HYPERVISOR_##name)" * 32)"\
 		: "=a" (__res), "=D" (__ign1), "=S" (__ign2), 	\
 		"=d" (__ign3)					\
@@ -92,7 +95,7 @@ extern char hypercall_page[PAGE_SIZE];
 #define _hypercall4(type, name, a1, a2, a3, a4)			\
 ({								\
 	long __res, __ign1, __ign2, __ign3;			\
-	asm volatile (						\
+	__asm volatile (					\
 		"movq %7,%%r10; "				\
 		"call hypercall_page + ("STR(__HYPERVISOR_##name)" * 32)"\
 		: "=a" (__res), "=D" (__ign1), "=S" (__ign2),	\
@@ -106,7 +109,7 @@ extern char hypercall_page[PAGE_SIZE];
 #define _hypercall5(type, name, a1, a2, a3, a4, a5)		\
 ({								\
 	long __res, __ign1, __ign2, __ign3;			\
-	asm volatile (						\
+	__asm volatile (					\
 		"movq %7,%%r10; movq %8,%%r8; "			\
 		"call hypercall_page + ("STR(__HYPERVISOR_##name)" * 32)"\
 		: "=a" (__res), "=D" (__ign1), "=S" (__ign2),	\

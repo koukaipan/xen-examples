@@ -1,8 +1,11 @@
 #include "event.h"
 #include "console.h"
+#include <xen/features.h>
 
 /* Some static space for the stack */
 char stack[8192];
+
+uint8_t xen_features[XENFEAT_NR_SUBMAPS * 32];
 
 extern shared_info_t shared_info;
 extern void handle_input(evtchn_port_t port, struct pt_regs * regs);

@@ -1,6 +1,13 @@
 #include <stdint.h>
-#include <hypercall-x86_32.h>
 #include <xen/xen.h>
+
+#if defined(__i386__)
+#include <hypercall-x86_32.h>
+#elif defined(__x86_64__)
+#include <hypercall-x86_64.h>
+#else
+#error "Unsupported architecture"
+#endif
 
 /*
  * These are assembler stubs in entry.S.

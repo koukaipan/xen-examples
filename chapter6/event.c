@@ -1,9 +1,16 @@
 #include <stdint.h>
 #include <xen/xen.h>
-#include <hypercall-x86_32.h>
 #include "event.h"
 #include "console.h"
 #include <barrier.h>
+
+#if defined(__i386__)
+#include <hypercall-x86_32.h>
+#elif defined(__x86_64__)
+#include <hypercall-x86_64.h>
+#else
+#error "Unsupported architecture"
+#endif
 
 #define NUM_CHANNELS (1024)
 
@@ -26,9 +33,15 @@ void EVT_IGN(evtchn_port_t port, struct pt_regs * regs) {};
 void init_events(void)
 {
 	/* Set the event delivery callbacks */
+#ifdef __i386__
 	HYPERVISOR_set_callbacks(
 		FLAT_KERNEL_CS, (unsigned long)hypervisor_callback,
 		FLAT_KERNEL_CS, (unsigned long)failsafe_callback);
+#else
+	HYPERVISOR_set_callbacks(
+		(unsigned long)hypervisor_callback,
+		(unsigned long)failsafe_callback, 0);
+#endif
 	/* Set all handlers to ignore, and mask them */
 	for(unsigned int i=0 ; i<NUM_CHANNELS ; i++)
 	{
@@ -48,19 +61,32 @@ void register_event(evtchn_port_t port, evtchn_handler_t handler)
 
 static inline unsigned long int first_bit(unsigned long int word)
 {
+#if defined (__i386__)
 	__asm__("bsfl %1,%0"
 		:"=r" (word)
 		:"rm" (word));
+#elif defined (__x96_64__)
+	__asm__("bsfq %1,%0"
+		:"=r" (word)
+		:"rm" (word));
+#endif
 	return word;
 }
 
 
 static inline unsigned long int xchg(unsigned long int * old, unsigned long int value)
 {
+#if defined (__i386__)
 	__asm__("xchgl %0,%1"
 		:"=r" (value)
 		:"m" (*old), "0"(value)
 		:"memory");
+#elif defined (__x86_64__)
+	__asm__("xchgq %0,%1"
+		:"=r" (value)
+		:"m" (*old), "0"(value)
+		:"memory");
+#endif
 	return value;
 }
 
