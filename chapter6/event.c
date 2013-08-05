@@ -37,10 +37,12 @@ void init_events(void)
 	HYPERVISOR_set_callbacks(
 		FLAT_KERNEL_CS, (unsigned long)hypervisor_callback,
 		FLAT_KERNEL_CS, (unsigned long)failsafe_callback);
-#else
+#elif defined (__x86_64__)
 	HYPERVISOR_set_callbacks(
 		(unsigned long)hypervisor_callback,
 		(unsigned long)failsafe_callback, 0);
+#else
+#error "Unsupported architecture"
 #endif
 	/* Set all handlers to ignore, and mask them */
 	for(unsigned int i=0 ; i<NUM_CHANNELS ; i++)
@@ -65,10 +67,12 @@ static inline unsigned long int first_bit(unsigned long int word)
 	__asm__("bsfl %1,%0"
 		:"=r" (word)
 		:"rm" (word));
-#elif defined (__x96_64__)
+#elif defined (__x86_64__)
 	__asm__("bsfq %1,%0"
 		:"=r" (word)
 		:"rm" (word));
+#else
+#error "Unsupported architecture"
 #endif
 	return word;
 }
@@ -86,6 +90,8 @@ static inline unsigned long int xchg(unsigned long int * old, unsigned long int 
 		:"=r" (value)
 		:"m" (*old), "0"(value)
 		:"memory");
+#else
+#error "Unsupported architecture"
 #endif
 	return value;
 }
