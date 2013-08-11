@@ -35,5 +35,6 @@ void start_kernel(start_info_t * start_info)
 	xenstore_test();
 	/* Flush the console buffer */
 	console_flush();
-	/* Exit, since we don't know how to do anything else */
+	/* We cannot directly leave here */
+	for(;;);
 }
