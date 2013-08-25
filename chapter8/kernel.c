@@ -1,6 +1,9 @@
 #include "console.h"
 #include "xenstore.h"
 #include <x86_mm.h>
+#include <xen/features.h>
+
+uint8_t xen_features[XENFEAT_NR_SUBMAPS * 32];
 
 /* Some static space for the stack */
 char stack[8192];
@@ -14,9 +17,15 @@ void failsafe_callback(void);
 void start_kernel(start_info_t * start_info)
 {
 	/* Define hypervisor upcall entry points */
+#ifdef __i386__
         HYPERVISOR_set_callbacks(
                 FLAT_KERNEL_CS, (unsigned long)hypervisor_callback,
                 FLAT_KERNEL_CS, (unsigned long)failsafe_callback);
+#else
+	HYPERVISOR_set_callbacks(
+		(unsigned long)hypervisor_callback,
+		(unsigned long)failsafe_callback, 0);
+#endif
 	/* Map the shared info page */
 	HYPERVISOR_update_va_mapping((unsigned long) shared_info, 
 			__pte(start_info->shared_info),
