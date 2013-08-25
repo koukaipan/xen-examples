@@ -31,4 +31,8 @@ clean:
 	rm -f testkernel
 
 run: testkernel
-	sudo xm create -c domain_config
+	@sudo xm create -p domain_config
+	@sudo ./chmod_xenstore.sh
+	@sudo xm unpause Simplest_Kernel
+	@echo "Unpaused domain\n\n"
+	@sudo xm console Simplest_Kernel
